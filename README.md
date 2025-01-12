@@ -6,4 +6,4 @@ Personal repository for libraries/headers created by me.
 
 - ***CLRSTR***: Simple Color String Formatting C Header.
   - Build: 25011213
-  - Link:
+  - Get file: [Raw Link](https://raw.githubusercontent.com/hppsrc/libs/refs/heads/main/C/CLRSTR.h)
