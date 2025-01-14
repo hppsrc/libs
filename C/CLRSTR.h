@@ -1,6 +1,6 @@
 
 // * CLRSTR header file, created by Hppsrc.
-// * Header build 25011213
+// * Header build 25011316
 
 // * Simple Color String Formatting C Header
 
@@ -13,7 +13,7 @@
 #define CLRSTRG_H
 
 #define NONE    ""
-#define RESET   "\e[0m"
+#define RESET   "\e[0"
 
 #define BLACK   "30"
 #define RED     "31"
@@ -59,16 +59,13 @@ char* printf_clrstr(char clrstr_s[], const char* clrstr_c, const char* clrstr_bg
     char final[MAX_STR_LENGTH] = "";        // final string to return
     char clstr_format[MAX_STR_LENGTH] = ""; // backg string to build
 
-    if ( clrstr_st == RST ) { // Reset if RST set
-        strcat(final, RESET);
-    } else{
-        sprintf(clstr_format,"\e[%sm\e[%dm", clrstr_c, atoi(clrstr_bg) + 10 ); // Concat format
-    }
-    
+    if ( clrstr_st == RST ) { clrstr_bg = clrstr_c = RESET; }
+
+    sprintf(clstr_format,"\e[%sm\e[%dm", clrstr_c, atoi(clrstr_bg) + 10 ); // Concat format 
     sprintf(final,"%s%s", clstr_format, clrstr_s ); // Finalconcat
-    
-    if ( clrstr_st == END ) { strcat(final, RESET); } // Reset if END set
-    
+
+    if ( clrstr_st == END ) { sprintf(final, "%s%sm", final, RESET ); } // Reset if END set
+
     return strdup(final); // Return final String
 
 }
