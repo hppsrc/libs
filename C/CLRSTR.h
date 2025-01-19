@@ -1,11 +1,14 @@
 
 // * CLRSTR header file, created by Hppsrc.
-// * Header build 25011316
+// * Header build 25011820
 
 // * Simple Color String Formatting C Header
 
 // * Source code on: https://github.com/hppsrc/libs
 // * Under LGPLv3 license feel free to modify, distribute and use this code for any purpose.
+
+// * Build 25011820 Log
+// * Fixed memory leak when using "strdup"; now it creates a static char array ("buffer") to be toggled on each use and send an ptr, and non-std \e replaced with \033
 
 #pragma once
 
@@ -13,7 +16,7 @@
 #define CLRSTRG_H
 
 #define NONE    ""
-#define RESET   "\e[0"
+#define RESET   "0"
 
 #define BLACK   "30"
 #define RED     "31"
@@ -56,17 +59,21 @@ typedef enum {
  */
 char* printf_clrstr(char clrstr_s[], const char* clrstr_c, const char* clrstr_bg , STATE clrstr_st) {
 
-    char final[MAX_STR_LENGTH] = "";        // final string to return
+    static char buffers[2][MAX_STR_LENGTH];  // set static values
+    static int current_buffer = 0;
+    current_buffer = (current_buffer + 1) % 2;  // toggle here
+
+    char* final = buffers[current_buffer];  // final string to return
     char clstr_format[MAX_STR_LENGTH] = ""; // backg string to build
 
     if ( clrstr_st == RST ) { clrstr_bg = clrstr_c = RESET; }
 
-    sprintf(clstr_format,"\e[%sm\e[%dm", clrstr_c, atoi(clrstr_bg) + 10 ); // Concat format 
+    sprintf(clstr_format,"\033[%sm\033[%dm", clrstr_c, atoi(clrstr_bg) + 10 ); // Concat format 
     sprintf(final,"%s%s", clstr_format, clrstr_s ); // Finalconcat
 
-    if ( clrstr_st == END ) { sprintf(final, "%s%sm", final, RESET ); } // Reset if END set
+    if ( clrstr_st == END ) { sprintf(final, "%s\033[%sm", final, RESET ); } // Reset if END set
 
-    return strdup(final); // Return final String
+    return final; // Return final String
 
 }
 
